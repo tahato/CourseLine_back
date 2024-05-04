@@ -7,15 +7,17 @@ exports.imageUpload = (req, res, next) => {
     if (err instanceof multer.MulterError) {
       return res.status(400).send("Multer error: " + err.message);
     } else if (err) {
-      return res.status(500).send("Error: " + err.message);
+      return res.status(500).send("Error:no image " + err.message);
     }
     if (req.file) {
+   
       cloudinary.uploader.upload(req.file.path, (error, result) => {
         if (error) {
           console.error(error);
           return res.status(500).send("Error uploading image to Cloudinary");
         }
         req.image = result.secure_url;
+        
         return next();
       });
     } else {

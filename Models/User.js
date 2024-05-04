@@ -3,7 +3,12 @@ const userShema = new mongoose.Schema({
   image:{
     type:String,
   },
-  username: {
+  firstName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  lastName: {
     type: String,
     required: true,
     trim: true,
@@ -29,9 +34,13 @@ const userShema = new mongoose.Schema({
     type:Boolean,
     default:false
   },
-  cours:{
+  course:{
     type:mongoose.Schema.Types.ObjectId,
-    ref:"Cours"
+    ref:"Course"
+  },
+  classe:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"Classe"
   }
 },
 {
