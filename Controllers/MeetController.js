@@ -9,8 +9,7 @@ const data = {
 };
 
 // Declare a global variable to store roomUrl
-let roomUrl,hosturl;
-
+let roomUrl, hosturl;
 
 // Function to fetch meeting details
 async function fetchMeetingDetails() {
@@ -39,7 +38,7 @@ exports.getMeeting = async (req, res) => {
     // Call function to fetch meeting details
     await fetchMeetingDetails();
     // Send roomUrl as a response
-    res.send({roomUrl,hosturl});
+    res.send({ roomUrl, hosturl });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -60,7 +60,7 @@ exports.getCourseByUser = async (req, res) => {
   }
   try {
     const course = await Course.find({ user: userid }).populate("user");
-    if (!course || course.length==0) {
+    if (!course || course.length == 0) {
       return res.status(404).json({ message: "course not found" });
     }
     res.json(course);
@@ -103,9 +103,9 @@ exports.deleteCourse = async (req, res) => {
 };
 // Add a student to a course
 exports.joinCourse = async (req, res) => {
-  const { userId} = req.body;
-  console.log("course",userId);
-  console.log("course",req.params.id);
+  const { userId } = req.body;
+  console.log("course", userId);
+  console.log("course", req.params.id);
   try {
     const course = await Course.findByIdAndUpdate(
       req.params.id.trim(),

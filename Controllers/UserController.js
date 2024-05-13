@@ -48,21 +48,19 @@ exports.addCourseClasse = async (req, res) => {
   }
 };
 // exports.updateUser = async (req, res) => {
-  
-  // try {
-  //   const { name, day, startTime, endTime } = req.body;
-  //   const updatedClasse = await Classe.findByIdAndUpdate(
-  //     req.params.id,
-  //     { name, day, startTime, endTime },
-  //     { new: true }
-  //   );
-  //   if (!updatedClasse) {
-  //     return res.status(404).json({ message: "Classe dose not existe" });
-  //   }
-  //   res.json("Classe succefuly Updated");
-  // } catch (err) {
-  //   res.status(400).json({ message: err.message });
-  // }
+
+// try {
+//   const { name, day, startTime, endTime } = req.body;
+//   const updatedClasse = await Classe.findByIdAndUpdate(
+//     req.params.id,
+//     { name, day, startTime, endTime },
+//     { new: true }
+//   );
+//   if (!updatedClasse) {
+//     return res.status(404).json({ message: "Classe dose not existe" });
+//   }
+//   res.json("Classe succefuly Updated");
+// } catch (err) {
+//   res.status(400).json({ message: err.message });
+// }
 // };
-
-

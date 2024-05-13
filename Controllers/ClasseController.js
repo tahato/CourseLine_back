@@ -128,20 +128,20 @@ exports.joinClasse = async (req, res) => {
 };
 // add url google meet
 exports.addUrl = async (req, res) => {
-  const {url} = req.body;
+  const { url } = req.body;
   console.log(url);
   try {
-    const classe = await Classe.findByIdAndUpdate(req.params.id.trim(),
-      { roomUrl: url},
-       {new:true}
-      );
-      if (!classe) {
-        return res.status(404).json({ message: "Classe dose not existe" });
-      }
-      res.json("Link successfuly shared");
+    const classe = await Classe.findByIdAndUpdate(
+      req.params.id.trim(),
+      { roomUrl: url },
+      { new: true }
+    );
+    if (!classe) {
+      return res.status(404).json({ message: "Classe dose not existe" });
+    }
+    res.json("Link successfuly shared");
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 // get url
-

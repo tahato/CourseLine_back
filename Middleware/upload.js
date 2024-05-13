@@ -10,19 +10,17 @@ exports.imageUpload = (req, res, next) => {
       return res.status(500).send("Error:no image " + err.message);
     }
     if (req.file) {
-   
       cloudinary.uploader.upload(req.file.path, (error, result) => {
         if (error) {
           console.error(error);
           return res.status(500).send("Error uploading image to Cloudinary");
         }
         req.image = result.secure_url;
-        
+
         return next();
       });
     } else {
       return next();
-      
     }
   });
 };
