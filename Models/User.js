@@ -34,14 +34,30 @@ const userShema = new mongoose.Schema({
     type:Boolean,
     default:false
   },
-  course:{
+  course:[{
     type:mongoose.Schema.Types.ObjectId,
     ref:"Course"
-  },
-  classe:{
+  }],
+  classe:[{
     type:mongoose.Schema.Types.ObjectId,
-    ref:"Classe"
+    ref:"classe"
+  }],
+  tel:{
+    type:Number,
+    trim:true,
+  },
+  Adresse:{
+    type:String,
+   
+  },
+  description:{
+    type:String,
+   
+  },
+  birthday:{
+    type:Date,
   }
+
 },
 {
     toJSON: {

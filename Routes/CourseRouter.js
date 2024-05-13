@@ -8,6 +8,8 @@ router.post("/create", CourseController.create);
 router.get("/", CourseController.getAllCourses);
 // get all modules for search bar
 router.get("/module", CourseController.getModules);
+// add student to course
+router.put("/student/:id", CourseController.joinCourse);
 // get courses for a specified user
 router.get("/user/:userId", CourseController.getCourseByUser);
 // delete course

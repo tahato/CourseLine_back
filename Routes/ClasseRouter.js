@@ -8,6 +8,10 @@ const ClasseController = require("../Controllers/ClasseController");
 router.post("/", ClasseController.create);
 // get classes for a specified course
 router.get("/course", ClasseController.getClassesByCourseId);
+// get classes for a specified course
+router.put("/student/:id", ClasseController.joinClasse);
+// Add Meet Link
+router.put("/link/:id", ClasseController.addUrl);
 // update Classe
 router.put("/:id", ClasseController.updateClasse);
 // get one classe

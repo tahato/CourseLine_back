@@ -42,7 +42,7 @@ exports.getAllCourses = async (req, res) => {
 // read all Modules..........................
 exports.getModules = async (req, res) => {
   try {
-    const mol = await Course.distinct('module');
+    const mol = await Course.distinct("module");
     if (!mol) {
       return res.status(404).json({ message: "you have no courses" });
     }
@@ -54,16 +54,13 @@ exports.getModules = async (req, res) => {
 //   get  courses for a user............................................
 exports.getCourseByUser = async (req, res) => {
   const userid = new mongoose.Types.ObjectId(req.params.userId);
-  function isValidObjectId(id) {
-    const objectIdRegex = /^[0-9a-fA-F]{24}$/;
-    return objectIdRegex.test(id);
-  }
-  if (!isValidObjectId(userid)) {
+
+  if (!mongoose.Types.ObjectId.isValid(userid)) {
     return res.status(400).json({ message: "Invalid user ID format" });
   }
   try {
     const course = await Course.find({ user: userid }).populate("user");
-    if (!course) {
+    if (!course || course.length==0) {
       return res.status(404).json({ message: "course not found" });
     }
     res.json(course);
@@ -100,6 +97,30 @@ exports.deleteCourse = async (req, res) => {
       return res.status(404).json({ message: "Course dose not existe" });
     }
     res.json({ message: "Course deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+// Add a student to a course
+exports.joinCourse = async (req, res) => {
+  const { userId} = req.body;
+  console.log("course",userId);
+  console.log("course",req.params.id);
+  try {
+    const course = await Course.findByIdAndUpdate(
+      req.params.id.trim(),
+      {
+        $addToSet: {
+          students: userId,
+        },
+      },
+      { new: true }
+    );
+    if (!course) {
+      0;
+      return res.status(404).json({ message: "User does not exist" });
+    }
+    res.json("you have successfuly joined the classe");
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -8,7 +8,6 @@ function isValidObjectId(id) {
 
 exports.create = async (req, res) => {
   const { name, day, startTime, endTime, user, course } = req.body;
-  console.log(typeof startTime);
   try {
     const classe = new Classe({
       name,
@@ -32,7 +31,7 @@ exports.getClassesByCourseId = async (req, res) => {
     return res.status(400).json({ message: "Invalid course ID format" });
   }
   try {
-    const classe = await Classe.find({ course });
+    const classe = await Classe.find({ course }).populate("course");
 
     console.log(classe.lethg);
     if (!classe || classe.length == 0) {
@@ -75,11 +74,10 @@ exports.deleteClasse = async (req, res) => {
 
 //   get one classe............................................
 exports.getClasseById = async (req, res) => {
-// res.json(req.params.id.trim());
-const id =req.params.id.trim()
-
+  // res.json(req.params.id.trim());
+  const id = req.params.id.trim();
   try {
-    const classe = await Classe.findById(id);
+    const classe = await Classe.findById(id).populate("course");
     if (!classe) {
       return res.status(404).json({ message: "classe not found" });
     }
@@ -93,7 +91,7 @@ const id =req.params.id.trim()
 exports.updateClasse = async (req, res) => {
   try {
     const { name, day, startTime, endTime } = req.body;
-    const updatedClasse= await Classe.findByIdAndUpdate(
+    const updatedClasse = await Classe.findByIdAndUpdate(
       req.params.id,
       { name, day, startTime, endTime },
       { new: true }
@@ -107,4 +105,43 @@ exports.updateClasse = async (req, res) => {
   }
 };
 
+// asign a student to a classe
+exports.joinClasse = async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const classe = await Classe.findByIdAndUpdate(
+      req.params.id.trim(),
+      {
+        $addToSet: {
+          user: userId,
+        },
+      },
+      { new: true }
+    );
+    if (!classe) {
+      return res.status(404).json({ message: "User does not exist" });
+    }
+    res.json(" user added to classe");
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+// add url google meet
+exports.addUrl = async (req, res) => {
+  const {url} = req.body;
+  console.log(url);
+  try {
+    const classe = await Classe.findByIdAndUpdate(req.params.id.trim(),
+      { roomUrl: url},
+       {new:true}
+      );
+      if (!classe) {
+        return res.status(404).json({ message: "Classe dose not existe" });
+      }
+      res.json("Link successfuly shared");
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+// get url
 

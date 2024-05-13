@@ -17,7 +17,7 @@ exports.register = async (req, res) => {
       password: hashelPassword,
       role,
     });
-     await user.save();
+    await user.save();
     return res.status(200).send("Regestration successfull");
   } catch (err) {
     res.status(400).send("email is invalid");
@@ -27,15 +27,22 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
+      .populate("classe")
+      .populate({
+        path: "course",
+        populate: {
+          path: "user",
+          model: "User",
+        },
+      });
     if (!user) {
       return res.status(404).send("Wrong Email or password");
     }
     await bcrypt.compare(password, user.password);
     const token = jwt.sign({ userid: user._id }, "secret", { expiresIn: "1h" });
-     res.status(200).json({ user, token });
+    res.status(200).json({ user, token });
   } catch (err) {
     return res.status(500).send(err.message);
-   
   }
 };

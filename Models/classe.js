@@ -21,5 +21,9 @@ const classeSchema = new mongoose.Schema({
   },
 
   user: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  roomUrl: {
+    type:String,
+    expires:3600*3
+  }
 });
 module.exports = mongoose.model("classe", classeSchema);

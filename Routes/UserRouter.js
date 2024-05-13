@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../Controllers/AuthController");
-const { imageUpload } = require("../Middleware/upload");
-router.post("/register", userController.register);
-router.post("/login", userController.login);
+const userController = require("../Controllers/UserController");
+const {imageUpload}=require('../Middleware/upload')
+// join a classe (byu a course)
+router.put("/classe/:id", userController.addCourseClasse);
+// update user
 
-module.exports = router;
+
+module.exports=router;
