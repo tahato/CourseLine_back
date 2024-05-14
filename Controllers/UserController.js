@@ -48,7 +48,6 @@ exports.addCourseClasse = async (req, res) => {
   }
 };
 exports.updateUser = async (req, res) => {
-console.log(req.body);
 try {
   const { tel,adresse,birthday,description,image} = req.body;
   const updatedUser = await User.findByIdAndUpdate(

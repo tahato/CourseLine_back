@@ -1,22 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const ClasseController = require("../Controllers/ClasseController");
-
+const {verifyToken}=require("../Middleware/tokenAuth")
 // create course
-router.post("/", ClasseController.create);
+router.post("/",verifyToken, ClasseController.create);
 // get classes for a specified course
 router.get("/course", ClasseController.getClassesByCourseId);
 // get classes for a specified course
-router.put("/student/:id", ClasseController.joinClasse);
+router.put("/student/:id",verifyToken, ClasseController.joinClasse);
 // Add Meet Link
 router.put("/link/:id", ClasseController.addUrl);
 // update Classe
-router.put("/:id", ClasseController.updateClasse);
+router.put("/:id",verifyToken, ClasseController.updateClasse);
 // get one classe
-router.get("/:id", ClasseController.getClasseById);
+router.get("/:id",verifyToken, ClasseController.getClasseById);
 // delete classe
-router.delete("/delete/:id", ClasseController.deleteClasse);
+router.delete("/delete/:id",verifyToken, ClasseController.deleteClasse);
 // get classes for specified user
-router.get("/user/:userId", ClasseController.getClasseByUser);
+router.get("/user/:userId",verifyToken, ClasseController.getClasseByUser);
 
 module.exports = router;
