@@ -40,7 +40,7 @@ exports.login = async (req, res) => {
       return res.status(404).send("Wrong Email or password");
     }
     await bcrypt.compare(password, user.password);
-    const token = jwt.sign({ userid: user._id }, "secret", { expiresIn: "1h" });
+    const token = jwt.sign({ userid: user._id }, process.env.SCRETE, { expiresIn: "1h" });
     res.status(200).json({ user, token });
   } catch (err) {
     return res.status(500).send(err.message);

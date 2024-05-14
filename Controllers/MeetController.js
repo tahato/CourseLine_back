@@ -1,7 +1,6 @@
 const fetch = require("cross-fetch");
 
-const API_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmFwcGVhci5pbiIsImF1ZCI6Imh0dHBzOi8vYXBpLmFwcGVhci5pbi92MSIsImV4cCI6OTAwNzE5OTI1NDc0MDk5MSwiaWF0IjoxNzE1Mjk1Mjc0LCJvcmdhbml6YXRpb25JZCI6MjMyMTY4LCJqdGkiOiIwMmEwOTY2MS00ZWY3LTQyNmMtYTAwNi1kODllMDIyYjkyYTYifQ.g9zwbEadBnB9t6Fl2HhpDXTZwyYwaZrzgYdGkiuYEdI";
+const API_KEY =process.env.MEET_API_KEY;
 
 const data = {
   endDate: "2099-02-18T14:23:00.000Z",

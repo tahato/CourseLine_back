@@ -32,8 +32,6 @@ exports.getClassesByCourseId = async (req, res) => {
   }
   try {
     const classe = await Classe.find({ course }).populate("course");
-
-    console.log(classe.lethg);
     if (!classe || classe.length == 0) {
       return res.status(404).send("classe not found");
     }

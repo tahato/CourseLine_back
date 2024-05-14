@@ -15,7 +15,7 @@ exports.imageUpload = (req, res, next) => {
           console.error(error);
           return res.status(500).send("Error uploading image to Cloudinary");
         }
-        req.image = result.secure_url;
+        req.body.image = result.secure_url;
 
         return next();
       });

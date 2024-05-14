@@ -47,20 +47,20 @@ exports.addCourseClasse = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-// exports.updateUser = async (req, res) => {
-
-// try {
-//   const { name, day, startTime, endTime } = req.body;
-//   const updatedClasse = await Classe.findByIdAndUpdate(
-//     req.params.id,
-//     { name, day, startTime, endTime },
-//     { new: true }
-//   );
-//   if (!updatedClasse) {
-//     return res.status(404).json({ message: "Classe dose not existe" });
-//   }
-//   res.json("Classe succefuly Updated");
-// } catch (err) {
-//   res.status(400).json({ message: err.message });
-// }
-// };
+exports.updateUser = async (req, res) => {
+console.log(req.body);
+try {
+  const { tel,adresse,birthday,description,image} = req.body;
+  const updatedUser = await User.findByIdAndUpdate(
+    req.params.id.trim(),
+    { tel,adresse,birthday,description,image },
+    { new: true }
+  );
+  if (!updatedUser) {
+    return res.status(404).json({ message: "Classe dose not existe" });
+  }
+  res.json("User succefuly Updated");
+} catch (err) {
+  res.status(400).json({ message: err.message });
+}
+};

@@ -46,7 +46,7 @@ const userShema = new mongoose.Schema({
     type:Number,
     trim:true,
   },
-  Adresse:{
+  adresse:{
     type:String,
    
   },
