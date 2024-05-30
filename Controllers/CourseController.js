@@ -23,7 +23,7 @@ exports.create = async (req, res) => {
 // read all courses..........................
 exports.getAllCourses = async (req, res) => {
   const page = req.query.page || 1;
-  const pageSize = 10;
+  const pageSize = 12;
   const totalCount = await Course.countDocuments();
   const totalPages = Math.ceil(totalCount / pageSize);
   try {
@@ -67,6 +67,7 @@ exports.getCourseByUser = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+  
 };
 
 // Update a course ...............................................
@@ -91,8 +92,6 @@ exports.updateCourse = async (req, res) => {
 exports.deleteCourse = async (req, res) => {
   try {
     const deletedcourse = await Course.findByIdAndDelete(req.params.id);
-    console.log(req.params.id);
-    console.log(deletedcourse);
     if (!deletedcourse) {
       return res.status(404).json({ message: "Course dose not existe" });
     }
@@ -104,8 +103,6 @@ exports.deleteCourse = async (req, res) => {
 // Add a student to a course
 exports.joinCourse = async (req, res) => {
   const { userId } = req.body;
-  console.log("course", userId);
-  console.log("course", req.params.id);
   try {
     const course = await Course.findByIdAndUpdate(
       req.params.id.trim(),

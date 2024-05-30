@@ -18,5 +18,8 @@ router.get("/:id",verifyToken, ClasseController.getClasseById);
 router.delete("/delete/:id",verifyToken, ClasseController.deleteClasse);
 // get classes for specified user
 router.get("/user/:userId",verifyToken, ClasseController.getClasseByUser);
+// delete classes for deleted course
+router.delete("/course/:id",verifyToken, ClasseController.deleteClasseByCourse);
 
 module.exports = router;
+

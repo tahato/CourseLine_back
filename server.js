@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
-require("dotenv").config();
 const cors = require("cors");
 const connect = require("./config/connect");
+require("dotenv").config();
+
 app.use(express.json());
 app.use(cors());
 
@@ -11,8 +12,6 @@ const userRouter = require("./Routes/UserRouter");
 const courseRouter = require("./Routes/CourseRouter");
 const calsseRouter = require("./Routes/ClasseRouter");
 const meetRouter = require("./Routes/MeetRouter");
-
-
 
 app.use("/auth",authRouter);
 app.use("/user",userRouter);

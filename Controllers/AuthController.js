@@ -8,6 +8,15 @@ exports.register = async (req, res) => {
   if (existingUser) {
     return res.status(400).send("Email already exist");
   }
+  const regExp =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*-/?&])[A-Za-z\d@$!%*-/?&]{8,}$/;
+  if (!regExp.test(password)) {
+    return res
+      .status(400)
+      .send(
+        "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character "
+      );
+  }
   try {
     const hashelPassword = await bcrypt.hash(password, 8);
     const user = new User({
@@ -39,8 +48,13 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(404).send("Wrong Email or password");
     }
-    await bcrypt.compare(password, user.password);
-    const token = jwt.sign({ userid: user._id }, process.env.SCRETE, { expiresIn: "1h" });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(404).send("Wrong Email or password");
+    }
+    const token = jwt.sign({ userid: user._id }, process.env.SECRETE, {
+      expiresIn: "1h",
+    });
     res.status(200).json({ user, token });
   } catch (err) {
     return res.status(500).send(err.message);

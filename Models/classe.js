@@ -1,3 +1,4 @@
+const { Timestamp } = require("mongodb");
 const mongoose = require("mongoose");
 const classeSchema = new mongoose.Schema({
   name: {
@@ -23,7 +24,15 @@ const classeSchema = new mongoose.Schema({
   user: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   roomUrl: {
     type:String,
-    expires:3600*3
+    default:"",
+    nulify:new Date() +60000,
+  },
+
+  roomUrlExpiresAt: {
+    type: Date,
+  
   }
 });
 module.exports = mongoose.model("classe", classeSchema);
+
+

@@ -14,7 +14,8 @@ router.put("/student/:id",verifyToken, CourseController.joinCourse);
 // get courses for a specified user
 router.get("/user/:userId",verifyToken, CourseController.getCourseByUser);
 // delete course
-
 router.delete("/delete/:id",verifyToken, CourseController.deleteCourse);
+
+
 
 module.exports = router;

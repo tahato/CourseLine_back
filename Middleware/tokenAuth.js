@@ -12,11 +12,11 @@ exports.verifyToken = (req, res, next) => {
   if (!token) {
     return res
       .status(401)
-      .json({ error: "Access denied.ooooo Token is required." });
+      .json({ error: "Access denied Token is required." });
   }
   try {
-    const decoded = jwt.verify(token, process.env.SCRETE);
-    // req.userId = decoded.userId;
+    const decoded = jwt.verify(token, process.env.SECRETE);
+    req.userId = decoded.userId;
     next();
   } catch (err) {
     console.error("Error verifying token:", err);

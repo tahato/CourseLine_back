@@ -1,5 +1,6 @@
 const Classe = require("../Models/classe");
 const mongoose = require("mongoose");
+const { deleteCourse } = require("./CourseController");
 
 function isValidObjectId(id) {
   const objectIdRegex = /^[0-9a-fA-F]{24}$/;
@@ -8,6 +9,10 @@ function isValidObjectId(id) {
 
 exports.create = async (req, res) => {
   const { name, day, startTime, endTime, user, course } = req.body;
+  const existingclasse=await  Classe.findOne({$or:[{ day, startTime, user },{name,course}]})
+  if(existingclasse){
+    return res.status(400).send("classe alredy exist")
+  }
   try {
     const classe = new Classe({
       name,
@@ -50,7 +55,7 @@ exports.getClasseByUser = async (req, res) => {
     const classe = await Classe.find({ user: user });
 
     if (!classe) {
-      return res.status(404).json({ message: "course not found" });
+      return res.status(404).json({ message: "classe not found" });
     }
     res.json(classe);
   } catch (err) {
@@ -61,6 +66,22 @@ exports.getClasseByUser = async (req, res) => {
 exports.deleteClasse = async (req, res) => {
   try {
     const deletedclasse = await Classe.findByIdAndDelete(req.params.id);
+    if (!deletedclasse) {
+      return res.status(404).json({ message: "classe dose not existe" });
+    }
+    res.json({ message: "classe deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+// delete classses of deleted course
+exports.deleteClasseByCourse = async (req, res) => {
+  const course = new mongoose.Types.ObjectId(req.params.id);
+  if (!isValidObjectId(course)) {
+    return res.status(400).json({ message: "Invalid course ID format" });
+  }
+  try {
+    const deletedclasse = await Classe.deleteMany({course:course});
     if (!deletedclasse) {
       return res.status(404).json({ message: "classe dose not existe" });
     }
@@ -126,14 +147,14 @@ exports.joinClasse = async (req, res) => {
 };
 // add url google meet
 exports.addUrl = async (req, res) => {
-  const { url } = req.body;
-  console.log(url);
+  const { url,roomUrlExpiresAt } = req.body;
   try {
     const classe = await Classe.findByIdAndUpdate(
       req.params.id.trim(),
       { roomUrl: url },
       { new: true }
     );
+  
     if (!classe) {
       return res.status(404).json({ message: "Classe dose not existe" });
     }
@@ -142,4 +163,6 @@ exports.addUrl = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-// get url
+
+
+
