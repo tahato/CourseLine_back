@@ -1,43 +1,24 @@
 const User = require("../Models/User");
 
-//  add course and classe (old join step, replaced by POST /classe/:id/join) ....
-exports.addCourseClasse = async (req, res) => {
-  const { courseId, classeId } = req.body;
-  try {
-    const user = await User.findByIdAndUpdate(
-      req.params.id.trim(),
-      {
-        $addToSet: {
-          course: courseId,
-          classe: classeId,
-        },
-      },
-      { new: true }
-    )
-      .populate("classe")
-      .populate({
-        path: "course",
-        populate: {
-          path: "user",
-          model: "User",
-        },
-      });
-    if (!user) {
-      return res.status(404).json({ message: "User does not exist" });
-    }
-    res.json({ user, message: "you have successfuly joined the classe" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
 // edit profil
 exports.updateUser = async (req, res) => {
   try {
-    const { tel, adresse, birthday, description, image } = req.body;
+    // only fields that were sent with a value are changed, so empty ones never wipe saved data
+    const changes = {};
+    for (const key of ["tel", "adresse", "birthday", "description"]) {
+      const value = req.body[key];
+      if (value !== undefined && value !== null && String(value).trim() !== "") {
+        changes[key] = value;
+      }
+    }
+    // the photo URL only comes from a real upload (set by imageUpload), never from the client
+    if (req.file && req.body.image) {
+      changes.image = req.body.image;
+    }
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id.trim(),
-      { tel, adresse, birthday, description, image },
-      { new: true }
+      changes,
+      { new: true, runValidators: true }
     )
       .populate("classe")
       .populate({

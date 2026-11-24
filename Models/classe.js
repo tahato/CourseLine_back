@@ -6,6 +6,11 @@ const classeSchema = new mongoose.Schema({
   },
   day: {
     type: String,
+    required: true,
+    enum: {
+      values: ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      message: "Please choose a day for the classe",
+    },
   },
   startTime: {
     type: String,

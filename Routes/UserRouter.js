@@ -8,9 +8,6 @@ const { imageUpload } = require("../Middleware/upload");
 // every /user/:id route acts on the caller's own account only
 const self = [verifyToken, requireSelf("id")];
 
-// old join step (user only), kept until the frontend uses POST /classe/:id/join (Phase 5)
-router.put("/classe/:id", self, userController.addCourseClasse);
-
 // update user (ownership checked before any image upload)
 router.put("/:id", self, imageUpload, userController.updateUser);
 

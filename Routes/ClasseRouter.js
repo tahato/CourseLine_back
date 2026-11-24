@@ -13,8 +13,6 @@ router.post("/", teacher, ClasseController.create);
 router.get("/course", ClasseController.getClassesByCourseId);
 // a student joins a classe: updates classe, course and user in one call
 router.post("/:id/join", student, ClasseController.join);
-// old join step (classe only), kept until the frontend uses /:id/join (Phase 5)
-router.put("/student/:id", student, ClasseController.joinClasse);
 // Add Meet Link (classe owner only)
 router.put("/link/:id", teacher, ClasseController.addUrl);
 // update Classe (classe owner only)
@@ -25,7 +23,5 @@ router.get("/:id", verifyToken, ClasseController.getClasseById);
 router.delete("/delete/:id", teacher, ClasseController.deleteClasse);
 // get classes for specified user (own classes only)
 router.get("/user/:userId", verifyToken, requireSelf("userId"), ClasseController.getClasseByUser);
-// delete classes for deleted course (course owner only)
-router.delete("/course/:id", teacher, ClasseController.deleteClasseByCourse);
 
 module.exports = router;

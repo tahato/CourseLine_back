@@ -6,6 +6,17 @@ const mongoose = require("mongoose");
 const isValidObjectId = (id) =>
   typeof id === "string" && /^[0-9a-fA-F]{24}$/.test(id.trim());
 
+// "HH:MM" (24h), as sent by <input type="time">
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+// Returns an error message for a bad schedule, or null when it is fine
+function scheduleError({ name, startTime, endTime }) {
+  if (typeof name !== "string" || !name.trim()) return "Please give the classe a name";
+  if (!TIME.test(startTime || "")) return "Please choose a start time";
+  if (!TIME.test(endTime || "")) return "Please choose an end time";
+  if (endTime <= startTime) return "The end time must be after the start time";
+  return null;
+}
+
 // A classe is owned by the teacher who owns its course.
 // Returns the classe if req.userId owns it, otherwise sends 404/403 and returns null.
 async function findOwnedClasse(req, res) {
@@ -30,6 +41,10 @@ exports.create = async (req, res) => {
   const { name, day, startTime, endTime, course } = req.body;
   if (!isValidObjectId(course)) {
     return res.status(400).send("Invalid course ID format");
+  }
+  const badSchedule = scheduleError({ name, startTime, endTime });
+  if (badSchedule) {
+    return res.status(400).send(badSchedule);
   }
   try {
     const ownedCourse = await Course.findOne({ _id: course, user: req.userId });
@@ -108,39 +123,12 @@ exports.deleteClasse = async (req, res) => {
   }
 };
 
-// delete classses of deleted course
-exports.deleteClasseByCourse = async (req, res) => {
-  if (!isValidObjectId(req.params.id)) {
-    return res.status(400).json({ message: "Invalid course ID format" });
-  }
-  const courseId = req.params.id.trim();
-  try {
-    // the course may already be deleted (the front deletes it first),
-    // so ownership is checked on the classes' own teacher membership too
-    const course = await Course.findById(courseId);
-    if (course && String(course.user) !== req.userId) {
-      return res
-        .status(403)
-        .json({ message: "You can only manage your own classes" });
-    }
-    const filter = course
-      ? { course: courseId }
-      : { course: courseId, "user.0": req.userId };
-    const classeIds = await Classe.find(filter).distinct("_id");
-    await Classe.deleteMany({ _id: { $in: classeIds } });
-    await User.updateMany(
-      { classe: { $in: classeIds } },
-      { $pull: { classe: { $in: classeIds } } }
-    );
-    res.json({ message: "classe deleted" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
 //   get one classe: only its teacher or its members............
 exports.getClasseById = async (req, res) => {
   const id = req.params.id.trim();
+  if (!isValidObjectId(id)) {
+    return res.status(400).json({ message: "Invalid classe ID format" });
+  }
   try {
     const classe = await Classe.findById(id).populate("course");
     if (!classe) {
@@ -164,33 +152,20 @@ exports.updateClasse = async (req, res) => {
   try {
     const classe = await findOwnedClasse(req, res);
     if (!classe) return;
-    const { name, day, startTime, endTime } = req.body;
-    Object.assign(classe, { name, day, startTime, endTime });
+    // only the fields that were sent are changed
+    const changes = {};
+    for (const key of ["name", "day", "startTime", "endTime"]) {
+      if (req.body[key] !== undefined) changes[key] = req.body[key];
+    }
+    Object.assign(classe, changes);
+    const badSchedule = scheduleError(classe);
+    if (badSchedule) {
+      return res.status(400).json({ message: badSchedule });
+    }
     await classe.save();
     res.json("Classe succefuly Updated");
   } catch (err) {
     res.status(400).json({ message: err.message });
-  }
-};
-
-// a student joins a classe (adds themself only)
-exports.joinClasse = async (req, res) => {
-  try {
-    const classe = await Classe.findByIdAndUpdate(
-      req.params.id.trim(),
-      {
-        $addToSet: {
-          user: req.userId,
-        },
-      },
-      { new: true }
-    );
-    if (!classe) {
-      return res.status(404).json({ message: "Classe dose not existe" });
-    }
-    res.json(" user added to classe");
-  } catch (err) {
-    res.status(500).json({ message: err.message });
   }
 };
 

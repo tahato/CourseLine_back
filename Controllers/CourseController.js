@@ -3,6 +3,10 @@ const Course = require("../Models/course");
 const Classe = require("../Models/classe");
 const User = require("../Models/User");
 
+// public course lists only show the teacher's name, photo and role
+const TEACHER_FIELDS = "firstName lastName image role";
+const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 exports.create = async (req, res) => {
   const { school, module, level, category, price, description } = req.body;
   try {
@@ -25,13 +29,18 @@ exports.create = async (req, res) => {
 exports.getAllCourses = async (req, res) => {
   const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
   const pageSize = 12;
+  // optional ?module= search, case-insensitive exact match
+  const search = typeof req.query.module === "string" ? req.query.module.trim() : "";
+  const filter = search
+    ? { module: { $regex: "^" + escapeRegex(search) + "$", $options: "i" } }
+    : {};
   try {
-    const totalCount = await Course.countDocuments();
+    const totalCount = await Course.countDocuments(filter);
     const totalPages = Math.ceil(totalCount / pageSize);
-    const course = await Course.find()
+    const course = await Course.find(filter)
       .skip((page - 1) * pageSize)
       .limit(pageSize)
-      .populate("user");
+      .populate("user", TEACHER_FIELDS);
     if (!course) {
       return res.status(404).json({ message: "you have no courses" });
     }
@@ -110,24 +119,4 @@ exports.deleteCourse = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-// Add a student to a course
-exports.joinCourse = async (req, res) => {
-  try {
-    const course = await Course.findByIdAndUpdate(
-      req.params.id.trim(),
-      {
-        $addToSet: {
-          students: req.userId, // a student can only add themself
-        },
-      },
-      { new: true }
-    );
-    if (!course) {
-      0;
-      return res.status(404).json({ message: "User does not exist" });
-    }
-    res.json("you have successfuly joined the classe");
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+
