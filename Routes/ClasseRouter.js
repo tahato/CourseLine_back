@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const ClasseController = require("../Controllers/ClasseController");
+const { wrapController } = require("../Middleware/asyncHandler");
+const ClasseController = wrapController(require("../Controllers/ClasseController"));
 const {verifyToken}=require("../Middleware/tokenAuth")
 // create course
 router.post("/",verifyToken, ClasseController.create);

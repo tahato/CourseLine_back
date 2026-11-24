@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const authController = require("../Controllers/AuthController");
+const { wrapController } = require("../Middleware/asyncHandler");
+const authController = wrapController(require("../Controllers/AuthController"));
 const { imageUpload } = require("../Middleware/upload");
 // register
 router.post("/register", authController.register);

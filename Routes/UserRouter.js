@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../Controllers/UserController");
+const { wrapController } = require("../Middleware/asyncHandler");
+const userController = wrapController(require("../Controllers/UserController"));
 const { verifyToken } = require("../Middleware/tokenAuth");
 const { imageUpload } = require("../Middleware/upload");
 // join a classe (byu a course)

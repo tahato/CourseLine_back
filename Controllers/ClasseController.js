@@ -2,10 +2,8 @@ const Classe = require("../Models/classe");
 const mongoose = require("mongoose");
 const { deleteCourse } = require("./CourseController");
 
-function isValidObjectId(id) {
-  const objectIdRegex = /^[0-9a-fA-F]{24}$/;
-  return objectIdRegex.test(id);
-}
+const isValidObjectId = (id) =>
+  typeof id === "string" && /^[0-9a-fA-F]{24}$/.test(id.trim());
 
 exports.create = async (req, res) => {
   const { name, day, startTime, endTime, user, course } = req.body;
@@ -31,10 +29,10 @@ exports.create = async (req, res) => {
 
 exports.getClassesByCourseId = async (req, res) => {
   const courseId = req.query.courseId;
-  const course = new mongoose.Types.ObjectId(courseId);
-  if (!isValidObjectId(course)) {
+  if (!isValidObjectId(courseId)) {
     return res.status(400).json({ message: "Invalid course ID format" });
   }
+  const course = new mongoose.Types.ObjectId(courseId.trim());
   try {
     const classe = await Classe.find({ course }).populate("course");
     if (!classe || classe.length == 0) {
@@ -47,10 +45,10 @@ exports.getClassesByCourseId = async (req, res) => {
 };
 //  ...read classes for one user...............
 exports.getClasseByUser = async (req, res) => {
-  const user = new mongoose.Types.ObjectId(req.params.userId);
-  if (!isValidObjectId(user)) {
+  if (!isValidObjectId(req.params.userId)) {
     return res.status(400).json({ message: "Invalid user ID format" });
   }
+  const user = new mongoose.Types.ObjectId(req.params.userId.trim());
   try {
     const classe = await Classe.find({ user: user });
 
@@ -76,10 +74,10 @@ exports.deleteClasse = async (req, res) => {
 };
 // delete classses of deleted course
 exports.deleteClasseByCourse = async (req, res) => {
-  const course = new mongoose.Types.ObjectId(req.params.id);
-  if (!isValidObjectId(course)) {
+  if (!isValidObjectId(req.params.id)) {
     return res.status(400).json({ message: "Invalid course ID format" });
   }
+  const course = new mongoose.Types.ObjectId(req.params.id.trim());
   try {
     const deletedclasse = await Classe.deleteMany({course:course});
     if (!deletedclasse) {

@@ -4,9 +4,16 @@ const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
   const { lastName, firstName, email, password, role } = req.body;
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    return res.status(400).send("Email already exist");
+  if (typeof email !== "string" || typeof password !== "string") {
+    return res.status(400).send("Email and password are required");
+  }
+  try {
+    const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
+    if (existingUser) {
+      return res.status(400).send("Email already exist");
+    }
+  } catch (err) {
+    return res.status(500).send(err.message);
   }
   const regExp =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*-/?&])[A-Za-z\d@$!%*-/?&]{8,}$/;
@@ -52,7 +59,7 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(404).send("Wrong Email or password");
     }
-    const token = jwt.sign({ userid: user._id }, process.env.SECRETE, {
+    const token = jwt.sign({ userId: user._id }, process.env.SECRETE, {
       expiresIn: "1h",
     });
     res.status(200).json({ user, token });

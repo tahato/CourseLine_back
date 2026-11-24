@@ -19,6 +19,10 @@ app.use("/course",courseRouter)
 app.use("/classe",calsseRouter)
 app.use("/meet",meetRouter);
 
+// must stay after the routes
+const { errorHandler } = require("./Middleware/errorHandler");
+app.use(errorHandler);
+
 app.listen(process.env.PORT, () => {
   console.log(`server is running on port`,process.env.PORT);
 });

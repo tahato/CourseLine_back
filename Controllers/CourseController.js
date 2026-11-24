@@ -22,11 +22,11 @@ exports.create = async (req, res) => {
 };
 // read all courses..........................
 exports.getAllCourses = async (req, res) => {
-  const page = req.query.page || 1;
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
   const pageSize = 12;
-  const totalCount = await Course.countDocuments();
-  const totalPages = Math.ceil(totalCount / pageSize);
   try {
+    const totalCount = await Course.countDocuments();
+    const totalPages = Math.ceil(totalCount / pageSize);
     const course = await Course.find()
       .skip((page - 1) * pageSize)
       .limit(pageSize)
@@ -53,11 +53,10 @@ exports.getModules = async (req, res) => {
 };
 //   get  courses for a user............................................
 exports.getCourseByUser = async (req, res) => {
-  const userid = new mongoose.Types.ObjectId(req.params.userId);
-
-  if (!mongoose.Types.ObjectId.isValid(userid)) {
+  if (!mongoose.isValidObjectId(req.params.userId)) {
     return res.status(400).json({ message: "Invalid user ID format" });
   }
+  const userid = new mongoose.Types.ObjectId(req.params.userId);
   try {
     const course = await Course.find({ user: userid }).populate("user");
     if (!course || course.length == 0) {

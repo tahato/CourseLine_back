@@ -1,3 +1,5 @@
 node_modules
 .env
 new.txt
+nodemone.json
+nodemon.json
