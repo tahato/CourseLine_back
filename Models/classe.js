@@ -1,4 +1,3 @@
-const { Timestamp } = require("mongodb");
 const mongoose = require("mongoose");
 const classeSchema = new mongoose.Schema({
   name: {
@@ -25,7 +24,6 @@ const classeSchema = new mongoose.Schema({
   roomUrl: {
     type:String,
     default:"",
-    nulify:new Date() +60000,
   },
 
   roomUrlExpiresAt: {

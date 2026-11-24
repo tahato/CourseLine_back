@@ -6,20 +6,20 @@ const courseSchema = new mongoose.Schema({
   },
   module: {
     type: String,
-    require: true,
+    required: true,
   },
   level: {
     type: String,
-    require: true,
+    required: true,
   },
 
   category: {
     type: String,
-    require: true,
+    required: true,
   },
   price: {
     type: Number,
-    require: true,
+    required: true,
   },
   description: {
     type: String,

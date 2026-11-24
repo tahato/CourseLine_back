@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 const Course = require("../Models/course");
+const Classe = require("../Models/classe");
+const User = require("../Models/User");
 
 exports.create = async (req, res) => {
-  const { school, module, level, category, price, description, user } =
-    req.body;
+  const { school, module, level, category, price, description } = req.body;
   try {
     const course = new Course({
       school,
@@ -12,7 +13,7 @@ exports.create = async (req, res) => {
       module,
       price,
       description,
-      user,
+      user: req.userId, // owner comes from the token, never from the body
     });
     await course.save();
     return res.status(200).send("Course created");
@@ -73,10 +74,10 @@ exports.getCourseByUser = async (req, res) => {
 exports.updateCourse = async (req, res) => {
   try {
     const { school, module, level, category, price, description } = req.body;
-    const updatedCourse = await Course.findByIdAndUpdate(
-      req.params.id,
+    const updatedCourse = await Course.findOneAndUpdate(
+      { _id: req.params.id, user: req.userId },
       { school, module, level, category, price, description },
-      { new: true }
+      { new: true, runValidators: true }
     );
     if (!updatedCourse) {
       return res.status(404).json({ message: "Course dose not existe" });
@@ -87,13 +88,23 @@ exports.updateCourse = async (req, res) => {
   }
 };
 
-// Delete a course
+// Delete a course, its classes, and every reference to them on users
 exports.deleteCourse = async (req, res) => {
   try {
-    const deletedcourse = await Course.findByIdAndDelete(req.params.id);
+    // only the teacher who owns the course can delete it
+    const deletedcourse = await Course.findOneAndDelete({
+      _id: req.params.id,
+      user: req.userId,
+    });
     if (!deletedcourse) {
       return res.status(404).json({ message: "Course dose not existe" });
     }
+    const classeIds = await Classe.find({ course: deletedcourse._id }).distinct("_id");
+    await Classe.deleteMany({ _id: { $in: classeIds } });
+    await User.updateMany(
+      { $or: [{ course: deletedcourse._id }, { classe: { $in: classeIds } }] },
+      { $pull: { course: deletedcourse._id, classe: { $in: classeIds } } }
+    );
     res.json({ message: "Course deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -101,13 +112,12 @@ exports.deleteCourse = async (req, res) => {
 };
 // Add a student to a course
 exports.joinCourse = async (req, res) => {
-  const { userId } = req.body;
   try {
     const course = await Course.findByIdAndUpdate(
       req.params.id.trim(),
       {
         $addToSet: {
-          students: userId,
+          students: req.userId, // a student can only add themself
         },
       },
       { new: true }

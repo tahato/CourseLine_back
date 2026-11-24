@@ -7,6 +7,9 @@ exports.register = async (req, res) => {
   if (typeof email !== "string" || typeof password !== "string") {
     return res.status(400).send("Email and password are required");
   }
+  if (!["student", "teacher"].includes(role)) {
+    return res.status(400).send("Please choose a role: student or teacher");
+  }
   try {
     const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
     if (existingUser) {
@@ -59,7 +62,7 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(404).send("Wrong Email or password");
     }
-    const token = jwt.sign({ userId: user._id }, process.env.SECRETE, {
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.SECRETE, {
       expiresIn: "1h",
     });
     res.status(200).json({ user, token });
